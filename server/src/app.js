@@ -2,6 +2,7 @@ import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import mongoose from 'mongoose';
 import { rateLimit } from 'express-rate-limit';
 import setupRoutes from './routes/setup.js';
 import authRoutes from './routes/auth.js';
@@ -19,6 +20,7 @@ import aiRoutes from './routes/ai.js';
 import liveRoutes from './routes/live.js';
 import notificationRoutes from './routes/notifications.js';
 import { notFound, errorHandler } from './middleware/errors.js';
+import { connectDatabase } from './config/db.js';
 
 const app = express();
 app.disable('x-powered-by');
@@ -31,6 +33,18 @@ app.use(express.urlencoded({ extended: false, limit: '1mb' }));
 app.use(cookieParser());
 app.use('/api', rateLimit({ windowMs: 15 * 60 * 1000, limit: 300, standardHeaders: true, legacyHeaders: false }));
 app.get('/api/health', (_req, res) => res.json({ ok: true, service: 'hcm-lite-api', status: 'healthy', timestamp: new Date().toISOString() }));
+let databaseConnection = null;
+app.use(async (_req, _res, next) => {
+  if (mongoose.connection.readyState === 1) return next();
+  try {
+    databaseConnection ||= connectDatabase();
+    await databaseConnection;
+    next();
+  } catch (error) {
+    databaseConnection = null;
+    next(error);
+  }
+});
 app.use('/api/setup', setupRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);

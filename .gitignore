@@ -12,6 +12,9 @@ dist/
 build/
 .vite/
 
+# Vercel local metadata
+.vercel/
+
 # Test output
 coverage/
 

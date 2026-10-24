@@ -64,6 +64,17 @@ export function NotificationCenter({ user, onNavigate, showToast }) {
 
   React.useEffect(() => { itemsRef.current = items; }, [items]);
 
+  const refresh = React.useCallback(async () => {
+    try {
+      const result = await api('/notifications?limit=100');
+      const nextItems = result.items || [];
+      setItems(nextItems);
+      setUnread(Number.isFinite(result.unread) ? result.unread : nextItems.filter(item => !item.readAt).length);
+    } catch {
+      // keep the last successful list when a background refresh fails
+    }
+  }, []);
+
   const load = React.useCallback(async () => {
     setLoading(true);
     setError('');
@@ -90,6 +101,10 @@ export function NotificationCenter({ user, onNavigate, showToast }) {
   React.useEffect(() => {
     if (!user?.id) return undefined;
     const socket = createRealtimeConnection();
+    if (!socket) {
+      const timer = window.setInterval(refresh, 20000);
+      return () => window.clearInterval(timer);
+    }
 
     const onNew = notification => {
       if (!notification?._id) return;
@@ -127,7 +142,7 @@ export function NotificationCenter({ user, onNavigate, showToast }) {
       socket.io.off('reconnect', onReconnect);
       socket.disconnect();
     };
-  }, [user?.id, load, showToast]);
+  }, [user?.id, load, refresh, showToast]);
 
   React.useEffect(() => {
     if (!open) return undefined;
