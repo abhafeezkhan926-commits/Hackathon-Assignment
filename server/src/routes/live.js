@@ -4,8 +4,9 @@ import mongoose from 'mongoose';
 import { fileTypeFromBuffer } from 'file-type';
 import { z } from 'zod';
 import { authenticate, allowRoles } from '../middleware/auth.js';
-import { LiveSession, LiveMessage } from '../models/index.js';
+import { LiveSession, LiveMessage, User } from '../models/index.js';
 import { asyncHandler, HttpError } from '../utils/httpError.js';
+import { notifyUsers } from '../utils/notify.js';
 import { cloudinaryConfigured, uploadLiveCover, deleteCloudAsset } from '../services/cloudinary.js';
 import { livekitConfigured, createLiveRoom, deleteLiveRoom, createLiveToken } from '../services/livekit.js';
 import { writeAudit } from '../utils/audit.js';
@@ -119,6 +120,18 @@ router.post('/sessions', allowRoles('admin'), upload.single('cover'), asyncHandl
 
   const populated = await LiveSession.findById(session._id).populate('host', hostSelect);
   await writeAudit(req, 'live.start', 'LiveSession', session._id, null, { title: session.title });
+  try {
+    const recipients = await User.find({ role: 'hr', active: true, _id: { $ne: req.user._id } }).select('_id').lean();
+    const hostName = req.user.profile?.fullName || req.user.username;
+    await notifyUsers(recipients.map(user => user._id), {
+      type: 'live_meeting',
+      title: 'Live meeting started',
+      message: `${hostName} started "${session.title}". Join the live meeting now.`,
+      link: '/live'
+    });
+  } catch (error) {
+    console.error('Live meeting notifications failed:', error?.message || error);
+  }
   res.status(201).json({ ok: true, data: { session: serializeSession(populated) }, message: 'Live meeting started.' });
 }));
 

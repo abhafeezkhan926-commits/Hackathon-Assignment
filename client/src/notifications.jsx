@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   ArrowRight, Bell, BookOpenText, CalendarDays, CheckCheck, Clock3, CreditCard,
-  LoaderCircle
+  LoaderCircle, Radio
 } from 'lucide-react';
 import { api } from './lib/api.js';
 import { createRealtimeConnection } from './lib/socket.js';
@@ -9,6 +9,7 @@ import { Button, EmptyState, Modal } from './components.jsx';
 
 const TYPE_META = {
   announcement: { icon: BookOpenText, className: 'notification-type-announcement' },
+  live_meeting: { icon: Radio, className: 'notification-type-live' },
   payslip_available: { icon: CreditCard, className: 'notification-type-payslip' },
   leave_decision: { icon: CalendarDays, className: 'notification-type-leave' },
   attendance_correction: { icon: Clock3, className: 'notification-type-attendance' },
@@ -112,6 +113,7 @@ export function NotificationCenter({ user, onNavigate, showToast }) {
       setItems(old => [notification, ...old].slice(0, 100));
       setUnread(count => count + 1);
       showToast(notification.title || 'New notification', 'info');
+      if (notification.type === 'live_meeting') window.dispatchEvent(new Event('hcm-live-changed'));
     };
 
     const onRead = payload => {

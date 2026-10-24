@@ -139,6 +139,11 @@
     color: #cb8a2c
 }
 
+.notification-type-live {
+    background: #ffe9eb;
+    color: #cf3f4b
+}
+
 .notification-type-default {
     background: #eef2f7;
     color: #64748b
@@ -434,6 +439,11 @@
 [data-theme="dark"] .notification-type-attendance {
     background: rgba(245, 181, 74, .14);
     color: #f0bf6a
+}
+
+[data-theme="dark"] .notification-type-live {
+    background: rgba(248, 113, 113, .15);
+    color: #f28b94
 }
 
 [data-theme="dark"] .notification-type-default {

@@ -1309,3 +1309,117 @@
 :root[data-theme="dark"] .live-chat-panel {
     box-shadow: 0 22px 60px rgba(0, 0, 0, .45)
 }
+
+/* Persistent live join strip shown across pages */
+.live-now-strip {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin: 0 0 20px;
+    padding: 13px 15px;
+    border: 1px solid #f1cfd3;
+    border-radius: 14px;
+    background: linear-gradient(100deg, #fff3f4 0%, #fffafa 70%);
+    color: #7c2b33;
+    text-align: left;
+    cursor: pointer;
+    transition: transform .2s, border-color .2s, box-shadow .2s
+}
+
+.live-now-strip:hover {
+    transform: translateY(-1px);
+    border-color: #e7b4ba;
+    box-shadow: 0 10px 28px rgba(150, 45, 57, .1)
+}
+
+.live-now-strip .live-badge {
+    background: #fff;
+    box-shadow: none;
+    border: 1px solid #f3d7d9
+}
+
+.live-now-copy {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px
+}
+
+.live-now-copy strong {
+    font-size: calc(11.5px * var(--font-scale, 1.2));
+    font-weight: 750;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+
+.live-now-copy small {
+    font-size: calc(9.5px * var(--font-scale, 1.2));
+    color: #a45a62;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+
+.live-now-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    flex-shrink: 0;
+    padding: 9px 13px;
+    border-radius: 9px;
+    background: #c73642;
+    color: #fff;
+    font-size: calc(9.5px * var(--font-scale, 1.2));
+    font-weight: 750;
+    box-shadow: 0 6px 16px rgba(199, 54, 66, .22)
+}
+
+:root[data-theme="dark"] .live-now-strip {
+    background: linear-gradient(100deg, #2a171c 0%, #1a2029 70%);
+    border-color: #4d2a30;
+    color: #f0c6ca
+}
+
+:root[data-theme="dark"] .live-now-strip:hover {
+    border-color: #6b3940;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, .28)
+}
+
+:root[data-theme="dark"] .live-now-strip .live-badge {
+    background: #351d22;
+    border-color: #5b3037;
+    color: #ff9aa2
+}
+
+:root[data-theme="dark"] .live-now-copy strong {
+    color: #f4d6d9
+}
+
+:root[data-theme="dark"] .live-now-copy small {
+    color: #bd8c92
+}
+
+:root[data-theme="dark"] .live-now-action {
+    background: #b73a45;
+    box-shadow: none
+}
+
+@media(max-width:600px) {
+    .live-now-strip {
+        flex-wrap: wrap;
+        gap: 9px;
+        padding: 11px 12px
+    }
+
+    .live-now-copy {
+        flex-basis: calc(100% - 86px)
+    }
+
+    .live-now-action {
+        width: 100%;
+        justify-content: center
+    }
+}
